@@ -1,57 +1,72 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
-
-// const books = [
-//   {
-//     isbn: "978-3-16-148410-0",
-//     title: "Harry Potter and the Philosopher's Stone",
-//     author: "J.K. Rowling",
-//     isBorrowed: false,
-//   },
-//   {
-//     isbn: "978-1-56619-909-4",
-//     title: "The Hobbit",
-//     author: "J.R.R. Tolkien",
-//     isBorrowed: true,
-//   },
-// ];
+import Modal from "./components/Modal/Modal";
 
 function App() {
   const [books, setBooks] = useState([]);
-  console.log(books);
+  const [searchValue, setSearchValue] = useState("");
+  const [filteredBooks, setFilteredBooks] = useState(books);
+  const [selectedItem, setSelectedItem] = useState({});
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [searchValue, setSearchValue] = useState("");
-  const [filteredBooks, setFilteredBooks] = useState(books);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddBookModalOpen, setIsAddBookModalOpen] = useState(false);
+  const [isEditBookModalOpen, setIsEditBookModalOpen] = useState(false);
+  const [isDeleteBookModalOpen, setIsDeleteBookModalOpen] = useState(false);
 
-  useEffect(() => {
+  const fetchBooks = () => {
     axios
       .get("http://localhost:3000/api/books")
       .then((res) => {
-        setBooks(res);
+        setBooks(res.data);
         setLoading(false);
+        setFilteredBooks(res.data);
       })
       .catch((error) => {
         setError(error);
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchBooks();
   }, []);
+
   const handleAddBook = () => {
+    setIsModalOpen(true);
+    setIsAddBookModalOpen(true);
     console.log("Add Book button is working");
   };
 
-  const handleBorrowBook = () => {
-    console.log("Borrow Book button is working");
+  const handleBorrowBook = (book) => {
+    setSelectedItem(book);
+    const { isbn } = selectedItem;
+    axios
+      .patch(`http://localhost:3000/api/books/${isbn}/borrow`)
+      .then(() => {
+        console.log("Book successfully borrowed");
+        fetchBooks();
+      })
+      .catch((error) => {
+        setError(error);
+        setLoading(false);
+      });
   };
 
-  const handleEditBook = () => {
+  const handleEditBook = (book) => {
+    setSelectedItem(book);
+    setIsModalOpen(true);
+    setIsEditBookModalOpen(true);
     console.log("Edit Book button is working");
   };
 
-  const handleDeleteBook = () => {
+  const handleDeleteBook = (book) => {
+    setSelectedItem(book);
+    setIsModalOpen(true);
+    setIsDeleteBookModalOpen(true);
     console.log("Delete Book button is working");
   };
 
@@ -70,17 +85,17 @@ function App() {
     setFilteredBooks(filtered);
   };
 
-  // if (loading) return <p>Loading...</p>;
-  // if (error) return <p>Error: {error.message}</p>;
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
 
   return (
     <div>
       <div>
         <h1 className="title">Library</h1>
-        <button className="bookBtns addBtn" onClick={handleAddBook}>
+        <button className="bookBtns addBtn" onClick={() => handleAddBook()}>
           Add New Book
         </button>
-        <form onSubmit={handleSearchSubmit}>
+        <form className="searhForm" onSubmit={handleSearchSubmit}>
           <input
             type="text"
             placeholder="Search book by title or ISBN"
@@ -94,30 +109,37 @@ function App() {
 
         {filteredBooks.length ? (
           <ul>
-            {filteredBooks.map(({ isbn, title, author, isBorrowed }) => (
-              <li key={isbn}>
-                <div>
-                  <div className={isBorrowed && "borrowed"}>
-                    <p className="title">{title}</p>
-                    <p className="author">{author}</p>
+            {filteredBooks.map((book, index) => (
+              <li key={index}>
+                <div className={"mainInfo"}>
+                  <p className="isbn">{book.isbn}</p>
+                  <div className={book.isBorrowed ? "borrowed" : ""}>
+                    <div className="titleWrpr">
+                      <p className="title">{book.title}</p>
+                    </div>
+                    <p className="author">{book.author}</p>
                   </div>
-                  {isBorrowed && <p className="borrowed">borrowed</p>}
                 </div>
                 <div>
+                  {book.isBorrowed && <p className="borrowed">borrowed</p>}
                   <button
                     className={
-                      "bookBtns " + (isBorrowed ? "unborrowBtn" : "borrowBtn")
+                      "bookBtns " +
+                      (book.isBorrowed ? "unborrowBtn" : "borrowBtn")
                     }
-                    onClick={handleBorrowBook}
+                    onClick={() => handleBorrowBook(book)}
                   >
-                    {isBorrowed ? "🚫" : "✅"}
+                    {book.isBorrowed ? "🚫" : "✅"}
                   </button>
-                  <button className="bookBtns editBtn" onClick={handleEditBook}>
+                  <button
+                    className="bookBtns editBtn"
+                    onClick={() => handleEditBook(book)}
+                  >
                     ✏️
                   </button>
                   <button
                     className="bookBtns deleteBtn"
-                    onClick={handleDeleteBook}
+                    onClick={() => handleDeleteBook(book)}
                   >
                     ❌
                   </button>
@@ -132,6 +154,19 @@ function App() {
           </div>
         )}
       </div>
+      {isModalOpen && (
+        <Modal
+          addBookModal={isAddBookModalOpen}
+          editBookModal={isEditBookModalOpen}
+          deleteBookModal={isDeleteBookModalOpen}
+          closeModal={() => setIsModalOpen(false)}
+          closeAddBookModal={() => setIsAddBookModalOpen(false)}
+          closeEditBookModal={() => setIsEditBookModalOpen(false)}
+          closeDeleteBookModal={() => setIsDeleteBookModalOpen(false)}
+          selectedItem={selectedItem}
+          refreshBooks={fetchBooks}
+        />
+      )}
     </div>
   );
 }

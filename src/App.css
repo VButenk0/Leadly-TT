@@ -19,7 +19,8 @@ button.bookBtns {
   border: 1px solid #000;
   border-radius: 50%;
   padding: 5px;
-  background-color: #f1f1f1;
+  color: #fff;
+  background-color: #3232e9;
 
   font-size: 10px;
 
@@ -63,7 +64,7 @@ button.deleteBtn:hover {
   border-color: #ff5c5c;
 }
 
-form {
+.searhForm {
   display: flex;
   flex-direction: row;
 
@@ -83,11 +84,11 @@ input:focus {
   outline: none;
 }
 
-form:focus-within {
+.searhForm:focus-within {
   outline: 1px solid #3232e9;
 }
 
-form button {
+.searhForm button {
   border: 1px solid #3232e9;
   background: #3232e9;
   color: white;
@@ -130,14 +131,27 @@ li div.borrowed p {
   text-decoration: line-through;
 }
 
+p.isbn {
+  font-size: 12px;
+}
+
+.titleWrpr {
+  width: 70%;
+}
+
 p.title {
   font-size: 16px;
   font-weight: 600;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 p.author {
   font-size: 14px;
   font-style: italic;
+  flex-shrink: 0;
 }
 
 p.borrowed {
