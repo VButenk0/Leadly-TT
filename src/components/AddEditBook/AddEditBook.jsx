@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import axios from "axios";
 import {
   BorrowWrpr,
@@ -14,8 +15,6 @@ const AddEditBook = ({
   selectedItem,
   refreshBooks,
 }) => {
-  // const { isbn, title, author, isBorrowed } = selectedItem;
-
   const [formData, setFormData] = useState({
     isbn: "",
     title: "",
@@ -73,7 +72,7 @@ const AddEditBook = ({
       ? axios.post("http://localhost:3000/api/books", formattedData)
       : axios.put(
           `http://localhost:3000/api/books/${selectedItem.isbn}`,
-          formattedData
+          formData
         );
 
     request

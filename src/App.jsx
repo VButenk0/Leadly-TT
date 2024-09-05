@@ -43,7 +43,7 @@ function App() {
 
   const handleBorrowBook = (book) => {
     setSelectedItem(book);
-    const { isbn } = selectedItem;
+    const { isbn } = book;
     axios
       .patch(`http://localhost:3000/api/books/${isbn}/borrow`)
       .then(() => {
@@ -60,29 +60,40 @@ function App() {
     setSelectedItem(book);
     setIsModalOpen(true);
     setIsEditBookModalOpen(true);
-    console.log("Edit Book button is working");
+    console.log("Edit Book button is working", book);
   };
 
   const handleDeleteBook = (book) => {
     setSelectedItem(book);
     setIsModalOpen(true);
     setIsDeleteBookModalOpen(true);
-    console.log("Delete Book button is working");
+    console.log("Delete Book button is working", book);
   };
 
   const handleSearchChange = (event) => {
+    if (event.target.value === "") {
+      setFilteredBooks(books);
+    }
     setSearchValue(event.target.value);
   };
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
-    const filtered = books.filter((book) => {
-      return (
-        book.title.toLowerCase().includes(searchValue.toLowerCase()) ||
-        book.isbn.includes(searchValue)
-      );
-    });
-    setFilteredBooks(filtered);
+
+    if (searchValue.trim() === "") {
+      setFilteredBooks(books);
+      return;
+    }
+
+    axios
+      .get(`http://localhost:3000/api/books/search?query=${searchValue}`)
+      .then((res) => {
+        setFilteredBooks(res.data);
+      })
+      .catch((error) => {
+        console.log("Search error:", error.message);
+        setFilteredBooks([]);
+      });
   };
 
   if (loading) return <p>Loading...</p>;
@@ -92,9 +103,7 @@ function App() {
     <div>
       <div>
         <h1 className="title">Library</h1>
-        <button className="bookBtns addBtn" onClick={() => handleAddBook()}>
-          Add New Book
-        </button>
+
         <form className="searhForm" onSubmit={handleSearchSubmit}>
           <input
             type="text"
@@ -106,6 +115,10 @@ function App() {
           />
           <button type="submit">Search</button>
         </form>
+
+        <button className="bookBtns addBtn" onClick={() => handleAddBook()}>
+          Add New Book
+        </button>
 
         {filteredBooks.length ? (
           <ul>
@@ -150,7 +163,11 @@ function App() {
         ) : (
           <div>
             <p>📚</p>
-            <p>No books are fit to your search</p>
+            {searchValue ? (
+              <p>No books are fit to your search</p>
+            ) : (
+              <p>Library is empty</p>
+            )}
           </div>
         )}
       </div>

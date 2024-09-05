@@ -7,9 +7,11 @@ const DeleteBook = ({ isbn, closeModals, refreshBooks }) => {
   const handleDeleteClick = () => {
     axios
       .delete(`http://localhost:3000/api/books/${isbn}`)
-      .then(() => {
-        console.log("Book successfully deleted");
-        refreshBooks();
+      .then((res) => {
+        if (res.status === 204) {
+          console.log("Book successfully deleted");
+          refreshBooks();
+        }
       })
       .catch((error) => {
         console.log(error.message);
