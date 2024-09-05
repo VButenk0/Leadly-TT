@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-import axios from "axios";
 import {
   BorrowWrpr,
   ModalWrpr,
@@ -8,6 +7,7 @@ import {
   SubmitBtn,
 } from "./AddEditBook.styled";
 import { useEffect, useState } from "react";
+import { api } from "../../configAxios/configAxios";
 
 const AddEditBook = ({
   addBookModal,
@@ -69,11 +69,8 @@ const AddEditBook = ({
     };
 
     const request = addBookModal
-      ? axios.post("http://localhost:3000/api/books", formattedData)
-      : axios.put(
-          `http://localhost:3000/api/books/${selectedItem.isbn}`,
-          formData
-        );
+      ? api.post("/books", formattedData)
+      : api.put(`/books/${selectedItem.isbn}`, formData);
 
     request
       .then(() => {

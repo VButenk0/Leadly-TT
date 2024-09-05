@@ -1,12 +1,12 @@
-import axios from "axios";
 import { DeleteBtn, DeleteModalWrpr } from "./DeleteBook.styled";
+import { api } from "../../configAxios/configAxios";
 
 const DeleteBook = ({ isbn, closeModals, refreshBooks }) => {
   console.log(isbn);
 
   const handleDeleteClick = () => {
-    axios
-      .delete(`http://localhost:3000/api/books/${isbn}`)
+    api
+      .delete(`/books/${isbn}`)
       .then((res) => {
         if (res.status === 204) {
           console.log("Book successfully deleted");

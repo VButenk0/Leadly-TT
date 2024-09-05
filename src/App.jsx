@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import axios from "axios";
 import Modal from "./components/Modal/Modal";
+import { api } from "./configAxios/configAxios";
 
 function App() {
   const [books, setBooks] = useState([]);
@@ -18,8 +18,8 @@ function App() {
   const [isDeleteBookModalOpen, setIsDeleteBookModalOpen] = useState(false);
 
   const fetchBooks = () => {
-    axios
-      .get("http://localhost:3000/api/books")
+    api
+      .get("/books")
       .then((res) => {
         setBooks(res.data);
         setLoading(false);
@@ -44,8 +44,8 @@ function App() {
   const handleBorrowBook = (book) => {
     setSelectedItem(book);
     const { isbn } = book;
-    axios
-      .patch(`http://localhost:3000/api/books/${isbn}/borrow`)
+    api
+      .patch(`/books/${isbn}/borrow`)
       .then(() => {
         console.log("Book successfully borrowed");
         fetchBooks();
@@ -85,8 +85,8 @@ function App() {
       return;
     }
 
-    axios
-      .get(`http://localhost:3000/api/books/search?query=${searchValue}`)
+    api
+      .get(`/books/search?query=${searchValue}`)
       .then((res) => {
         setFilteredBooks(res.data);
       })
