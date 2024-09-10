@@ -38,7 +38,6 @@ function App() {
   const handleAddBook = () => {
     setIsModalOpen(true);
     setIsAddBookModalOpen(true);
-    console.log("Add Book button is working");
   };
 
   const handleBorrowBook = (book) => {
@@ -47,7 +46,6 @@ function App() {
     api
       .patch(`/books/${isbn}/borrow`)
       .then(() => {
-        console.log("Book successfully borrowed");
         fetchBooks();
       })
       .catch((error) => {
@@ -60,14 +58,12 @@ function App() {
     setSelectedItem(book);
     setIsModalOpen(true);
     setIsEditBookModalOpen(true);
-    console.log("Edit Book button is working", book);
   };
 
   const handleDeleteBook = (book) => {
     setSelectedItem(book);
     setIsModalOpen(true);
     setIsDeleteBookModalOpen(true);
-    console.log("Delete Book button is working", book);
   };
 
   const handleSearchChange = (event) => {
@@ -91,7 +87,7 @@ function App() {
         setFilteredBooks(res.data);
       })
       .catch((error) => {
-        console.log("Search error:", error.message);
+        setError(error);
         setFilteredBooks([]);
       });
   };

@@ -28,7 +28,6 @@ const Modal = ({
     closeAddBookModal();
     closeEditBookModal();
     closeDeleteBookModal();
-    console.log("All modals closed");
   });
 
   useEffect(() => {

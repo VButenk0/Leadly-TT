@@ -74,10 +74,6 @@ const AddEditBook = ({
 
     request
       .then(() => {
-        console.log(
-          addBookModal ? "Book successfully added" : "Book successfully edited",
-          formattedData
-        );
         refreshBooks();
       })
       .catch((error) => {
